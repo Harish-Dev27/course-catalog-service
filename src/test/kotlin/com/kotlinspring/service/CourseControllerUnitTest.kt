@@ -71,6 +71,27 @@ class CourseControllerUnitTest {
     }
 
     @Test
+    fun test_global_exception_handler() {
+        //given
+        val courseDto = CourseDTO(null, "Build with Kotlin", "DEVELOPMENT")
+        val errorMessage = "Unexpected error occurred"
+
+        //when
+        every { courseService.addCourse(any()) } throws RuntimeException(errorMessage)
+        val savedCourseDto = webTestClient.post()
+            .uri("/v1/courses")
+            .bodyValue(courseDto)
+            .exchange()
+            .expectStatus().is5xxServerError
+            .expectBody(String::class.java)
+            .returnResult()
+            .responseBody
+
+        //then
+        assertEquals(errorMessage,savedCourseDto)
+    }
+
+    @Test
     fun getAllCoursesTest(){
         every { courseService.getCourses() }.returnsMany(
                 listOf(courseDTO(id=1),
