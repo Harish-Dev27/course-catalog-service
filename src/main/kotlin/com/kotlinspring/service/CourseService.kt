@@ -23,9 +23,10 @@ class CourseService(
         return course.toDto()
     }
 
-    fun getCourses(): List<CourseDTO> {
-        return courseRepository.findAll()
-            .map { it.toDto() }
+    fun getCourses(courseName: String?): List<CourseDTO> {
+        return courseName?.let {
+            courseRepository.findCourseByName(courseName).map { it.toDto() }
+        } ?: courseRepository.findAll().map { it.toDto() }
     }
 
     fun updateCourse(courseDTO: CourseDTO, courseId: Int): CourseDTO {

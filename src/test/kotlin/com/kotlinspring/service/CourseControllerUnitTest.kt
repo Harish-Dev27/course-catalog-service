@@ -93,7 +93,7 @@ class CourseControllerUnitTest {
 
     @Test
     fun getAllCoursesTest(){
-        every { courseService.getCourses() }.returnsMany(
+        every { courseService.getCourses(any()) }.returnsMany(
                 listOf(courseDTO(id=1),
                     courseDTO(id=2, "Sample course")
                 )

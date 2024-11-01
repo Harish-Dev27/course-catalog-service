@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertEquals
 
 
@@ -68,6 +69,24 @@ class CourseControllerIntegrationTest {
 
         println(response)
         assertEquals(3,response!!.size)
+    }
+
+    @Test
+    fun getAllSpecificCoursesTest(){
+        val uri = UriComponentsBuilder.fromUriString("/v1/courses")
+            .queryParam("course","SpringBoot").toUriString()
+
+        val response = webTestClient
+            .get()
+            .uri(uri)
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult()
+            .responseBody
+
+        println(response)
+        assertEquals(2,response!!.size)
     }
 
     @Test

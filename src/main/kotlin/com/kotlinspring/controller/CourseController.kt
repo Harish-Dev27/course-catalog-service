@@ -22,7 +22,7 @@ class CourseController(
     }
 
     @GetMapping
-    fun getCourses(): List<CourseDTO> = courseService.getCourses()
+    fun getCourses(@RequestParam ("course", required = false) courseName: String?): List<CourseDTO> = courseService.getCourses(courseName)
 
     @PutMapping("/{id}")
     fun updateCourse(@RequestBody courseDTO: CourseDTO,
