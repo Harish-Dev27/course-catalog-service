@@ -2,9 +2,7 @@ package com.kotlinspring.service
 
 import com.kotlinspring.controller.CourseController
 import com.kotlinspring.model.CourseDTO
-import com.kotlinspring.persistence.CourseEntity
 import com.kotlinspring.utils.courseDTO
-import com.kotlinspring.utils.courseEntityList
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.just
@@ -33,16 +31,12 @@ class CourseControllerUnitTest {
         val courseDto = CourseDTO(null, "Build with Kotlin", "DEVELOPMENT")
 
         //when
-        every { courseService.addCourse(any()) } returns courseDTO(id=1)
+        every { courseService.addCourse(any()) } returns courseDTO(id = 1)
 
-        val savedCourseDto = webTestClient.post()
-            .uri("/v1/courses")
-            .bodyValue(courseDto)
-            .exchange()
-            .expectStatus().isCreated
-            .expectBody(CourseDTO::class.java)
-            .returnResult()
-            .responseBody
+        val savedCourseDto =
+            webTestClient.post().uri("/v1/courses").bodyValue(courseDto).exchange().expectStatus().isCreated.expectBody(
+                    CourseDTO::class.java
+                ).returnResult().responseBody
 
         //then
         Assertions.assertTrue {
@@ -56,18 +50,12 @@ class CourseControllerUnitTest {
         val courseDto = CourseDTO(null, "", "")
 
         //when
-        every { courseService.addCourse(any()) } returns courseDTO(id=1)
+        every { courseService.addCourse(any()) } returns courseDTO(id = 1)
 
-        val savedCourseDto = webTestClient.post()
-            .uri("/v1/courses")
-            .bodyValue(courseDto)
-            .exchange()
-            .expectStatus().isBadRequest
-            .expectBody(String::class.java)
-            .returnResult()
-            .responseBody
+        val savedCourseDto = webTestClient.post().uri("/v1/courses").bodyValue(courseDto).exchange()
+            .expectStatus().isBadRequest.expectBody(String::class.java).returnResult().responseBody
 
-        assertEquals("courseDTO.category cannot be blank, courseDTO.name cannot be blank",savedCourseDto)
+        assertEquals("courseDTO.category cannot be blank, courseDTO.name cannot be blank", savedCourseDto)
     }
 
     @Test
@@ -78,55 +66,41 @@ class CourseControllerUnitTest {
 
         //when
         every { courseService.addCourse(any()) } throws RuntimeException(errorMessage)
-        val savedCourseDto = webTestClient.post()
-            .uri("/v1/courses")
-            .bodyValue(courseDto)
-            .exchange()
-            .expectStatus().is5xxServerError
-            .expectBody(String::class.java)
-            .returnResult()
-            .responseBody
+        val savedCourseDto = webTestClient.post().uri("/v1/courses").bodyValue(courseDto).exchange()
+            .expectStatus().is5xxServerError.expectBody(String::class.java).returnResult().responseBody
 
         //then
-        assertEquals(errorMessage,savedCourseDto)
+        assertEquals(errorMessage, savedCourseDto)
     }
 
     @Test
-    fun getAllCoursesTest(){
+    fun getAllCoursesTest() {
         every { courseService.getCourses(any()) }.returnsMany(
-                listOf(courseDTO(id=1),
-                    courseDTO(id=2, "Sample course")
-                )
+            listOf(
+                courseDTO(id = 1), courseDTO(id = 2, "Sample course")
+            )
         )
-        val response = webTestClient
-            .get()
-            .uri("/v1/courses")
-            .exchange()
-            .expectStatus().isOk
-            .expectBodyList(CourseDTO::class.java)
-            .returnResult()
-            .responseBody
+        val response =
+            webTestClient.get().uri("/v1/courses").exchange().expectStatus().isOk.expectBodyList(CourseDTO::class.java)
+                .returnResult().responseBody
 
         println(response)
-        assertEquals(2,response!!.size)
+        assertEquals(2, response!!.size)
     }
 
     @Test
     fun updateCourseTest() {
         //given
         val requestBody = CourseDTO(null, "Build Restful APIs using Kotlin and SpringBoot 2", "Development")
-        every { courseService.updateCourse(any(), any()) } returns courseDTO(100, "Build Restful APIs using Kotlin and SpringBoot 2")
+        every { courseService.updateCourse(any(), any()) } returns courseDTO(
+            100,
+            "Build Restful APIs using Kotlin and SpringBoot 2"
+        )
 
 
         //when
-        val response = webTestClient.put()
-            .uri("/v1/courses/{id}",100)
-            .bodyValue(requestBody)
-            .exchange()
-            .expectStatus().isOk
-            .expectBody(CourseDTO::class.java)
-            .returnResult()
-            .responseBody
+        val response = webTestClient.put().uri("/v1/courses/{id}", 100).bodyValue(requestBody).exchange()
+            .expectStatus().isOk.expectBody(CourseDTO::class.java).returnResult().responseBody
 
 
         //then
@@ -138,10 +112,7 @@ class CourseControllerUnitTest {
     fun deleteCourseTest() {
         //when
         every { courseService.deleteCourse(any()) } just runs
-        val response = webTestClient.delete()
-            .uri("/v1/courses/{id}",100)
-            .exchange()
-            .expectStatus().isNoContent
+        val response = webTestClient.delete().uri("/v1/courses/{id}", 100).exchange().expectStatus().isNoContent
 
     }
 
