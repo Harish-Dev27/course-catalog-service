@@ -1,5 +1,6 @@
 package com.kotlinspring.handler
 
+import com.kotlinspring.exception.InstructorIdNotPresentException
 import mu.KLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -38,6 +39,12 @@ class GlobalExceptionHandler: ResponseEntityExceptionHandler() {
             .body(errors.joinToString(", ") {it})
     }
 
+    @ExceptionHandler(InstructorIdNotPresentException::class)
+    fun handleInstructorIdNotPresentException(ex: InstructorIdNotPresentException, request: WebRequest): ResponseEntity<Any>{
+        logger.error("Exception message: ${ex.message}, $ex")
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ex.message)
+    }
 
     @ExceptionHandler(Exception::class)
     fun handleAnyException(ex: Exception, request: WebRequest): ResponseEntity<Any>{

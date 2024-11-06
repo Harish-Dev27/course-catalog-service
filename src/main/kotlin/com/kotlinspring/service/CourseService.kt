@@ -7,16 +7,24 @@ import com.kotlinspring.repository.CourseRepository
 import mu.KLogging
 import org.springframework.stereotype.Service
 import com.kotlinspring.exception.CourseNotFoundException
+import com.kotlinspring.exception.InstructorIdNotPresentException
 
 
 @Service
 class CourseService(
     val courseRepository: CourseRepository,
+    val instructorService: InstructorService,
 ) {
     companion object : KLogging()
 
     fun addCourse(courseDTO: CourseDTO): CourseDTO {
-        val course = courseDTO.toCourseEntity()
+        val instructor = instructorService.findByInstructorId(courseDTO.instructorId)
+
+        if(!instructor.isPresent){
+            throw InstructorIdNotPresentException("Instructor Id is not present:: ${courseDTO.instructorId}")
+        }
+
+        val course = courseDTO.toCourseEntity(instructor.get())
         courseRepository.save(course)
 
         logger.info("Course saved in the Db:: $course")

@@ -2,9 +2,11 @@ package com.kotlinspring.service
 
 import com.kotlinspring.model.InstructorDTO
 import com.kotlinspring.model.toEntity
+import com.kotlinspring.persistence.InstructorEntity
 import com.kotlinspring.persistence.toDto
 import com.kotlinspring.repository.InstructorRepository
 import org.springframework.stereotype.Service
+import java.util.Optional
 
 @Service
 class InstructorService(
@@ -15,6 +17,10 @@ class InstructorService(
 
         instructorRepository.save(instructor)
         return instructor.toDto()
+    }
+
+    fun findByInstructorId(instructorId: Int?): Optional<InstructorEntity> {
+        return instructorRepository.findById(instructorId!!)
     }
 
 }
